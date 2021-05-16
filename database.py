@@ -136,7 +136,7 @@ class DBTable:
 
         with open(f'{name}.html', 'w') as f:
             self.html_to_pdf(new_file, f'./tables/{name}.pdf')  # convert to .pdf
-            del f
+
 
     def html_to_pdf(self, source_html, output_filename):
         """Writes .pdf file from HTML"""
@@ -151,21 +151,21 @@ class Data(DBTable):
     def __init__(self, name):
         super().__init__(name)
 
-    def fit_model(self, col, _ideal, r_type=None, order=1, subplot=False, print_table=True):
+    def fit_model(self, col, _ideal, r_type, order=1, subplot=False, print_table=False):
         """Fit a regression model with training data function"""
 
         col_name = f'y{col}'
-        x = self.df['x'].values
         subplot_array, _n, _rss, _rmse, _max_e, _var = [], [], [], [], [], []
 
         if r_type == "linear":
+            x = self.df['x'].values
             lr = stats.linregress(self.df['x'], self.df[col_name])
             fun = lr.slope * x + lr.intercept
             model = Model(x, fun, col)
             if _ideal:  # match ideal function if ideal Data object is passed
                 model.find_ideal_function(_ideal)
-            _rmse.append(model.rmse)
-            _max_e.append(model.max_dev)
+                _rmse.append(model.rmse)
+                _max_e.append(model.max_dev)
             if print_table:
                 model_df = pd.DataFrame()
                 model_df['RMSE'] = [i.round(5) for i in _rmse]
@@ -187,11 +187,11 @@ class Data(DBTable):
                 model = Model(fn_x, fn_y, col, rss=det[0], order=i)
                 if _ideal:  # match ideal function if ideal Data object is passed
                     model.find_ideal_function(_ideal)
-                _n.append(i)
-                _rss.append(model.rss)
-                _rmse.append(model.rmse)
-                _max_e.append(model.max_dev)
-                _var.append(model.var)
+                    _n.append(i)
+                    _rss.append(model.rss)
+                    _rmse.append(model.rmse)
+                    _max_e.append(model.max_dev)
+                    _var.append(model.var)
                 if det[0] < rss_max:
                     subplot_array.append(model)
             if print_table:
@@ -209,4 +209,4 @@ class Data(DBTable):
                 subplot_graph.make_subplots(subplot_array)
                 return model
         else:
-            raise RegressionException("You must provide a type of regression via keyword arg.")
+            raise RegressionException("You must provide a valid type of regression via keyword arg.")
