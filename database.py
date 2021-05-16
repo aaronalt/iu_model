@@ -4,8 +4,8 @@ IU International University of Applied Sciences
 Data Science, M.Sc.
 """
 
-
-from sqlalchemy import Table, MetaData, create_engine, Column, Float
+from sqlalchemy import Table, MetaData, create_engine, Column, Float, String, inspect
+from sqlalchemy.exc import InvalidRequestError
 import pandas as pd
 from numpy.polynomial import Polynomial as P
 from scipy import stats
@@ -22,10 +22,18 @@ class TableNotCreatedException(Exception):
     pass
 
 
+class RegressionException(Exception):
+    """Called if type of regression not specified"""
+    pass
+
+
+class CSVError(Exception):
+    """Called if csv file not found"""
+    pass
+
+
 class DBTable:
-    """
-    Creates a new sqlalchemy.Table object for an SQLite database upon initialization.
-    """
+    """Creates a new sqlalchemy.Table object for an SQLite database"""
 
     def __init__(self, name):
         self.name = name
@@ -34,25 +42,25 @@ class DBTable:
         self.table = Table()
 
         # Create graphs for SQLite
-        if self.name == "training_data":
+        if 'train' in self.name.lower():
             self.table = Table(
                 "training_data", meta,
-                Column("x", Float),
+                Column("x", Float, primary_key=True),
                 Column("y1", Float),
                 Column("y2", Float),
                 Column("y3", Float),
                 Column("y4", Float))
-        if self.name == "test_data":
+        if 'test_' in self.name.lower():
             self.table = Table(
                 "test_data", meta,
-                Column("x", Float),
+                Column("x", Float, primary_key=True),
                 Column("y", Float),
                 Column("delta y", Float),
                 Column("ideal function", Float))
-        if self.name == "ideal_functions":
+        if 'ideal' in self.name.lower():
             self.table = Table(
                 "ideal_functions", meta,
-                Column("x", Float),
+                Column("x", Float, primary_key=True),
                 Column("y1", Float), Column("y2", Float), Column("y3", Float), Column("y4", Float),
                 Column("y5", Float), Column("y6", Float), Column("y7", Float), Column("y8", Float),
                 Column("y9", Float), Column("y10", Float), Column("y11", Float), Column("y12", Float),
@@ -67,44 +75,54 @@ class DBTable:
                 Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
                 Column("y49", Float), Column("y50", Float))
 
+    def add_test_table(self, name):
+        try:
+            self.table = Table(
+                name, meta,
+                Column('a', String), Column('b', String), Column('c', String))
+            self.table.create(engine, checkfirst=True)
+            print('table added')
+        except InvalidRequestError as ire:
+            print(ire)
+
+    def drop_test_table(self):
+        self.table.drop(engine, checkfirst=True)
+        inspector = inspect(engine)
+        print('unittest' in inspector.get_table_names())
 
     def csv_to_db(self):
-        """
-        Reads data from CSV file, converts to Pandas Dataframe, inserts Dataframe into the database.
-        """
+        """Reads data from CSV file, converts to Pandas Dataframe, inserts Dataframe into the database"""
         self.csv_to_df()
         self.df_to_db(pd.DataFrame())
         meta.create_all(engine)
 
-    def csv_to_df(self):
-        """
-        Reads data from CSV file and converts into Pandas Dataframe.
-        """
-        if self.name == "training_data":
+    def csv_to_df(self, test_file=None):
+        """Reads data from CSV file and converts into Pandas Dataframe"""
+        if 'train' in self.name.lower():
             self.df = pd.read_csv("./datasets/train.csv")
-        if self.name == "test_data":
+            return self.df
+        elif 'test_' in self.name.lower():
             self.df = pd.read_csv("./datasets/test.csv")
-        if self.name == "ideal_functions":
+            return self.df
+        elif 'ideal' in self.name.lower():
             self.df = pd.read_csv("./datasets/ideal.csv")
-        return self.df
+            return self.df
+        elif 'unittest' in self.name.lower():
+            self.df = pd.read_csv(f'./tests/{test_file}.csv')
+        else:
+            raise CSVError("csv file not found")
 
     def df_to_db(self, df):
-        """
-        Inserts Dataframe object into the database.
-        """
-        try:
-            if df.__sizeof__() == 0:
-                self.df.to_sql(self.name, con=engine, if_exists='replace')
-            else:
-                df.to_sql(self.name, con=engine, if_exists='replace')
-                meta.create_all(engine)
-        except ValueError:
-            # throw exception here
-            print("table already exists")
+        """Inserts Dataframe object into the database"""
+        if df.__sizeof__() == 0:
+            self.df.to_sql(self.name, con=engine, if_exists='replace')
+            meta.create_all(engine)
+        else:
+            df.to_sql(self.name, con=engine, if_exists='replace')
+            meta.create_all(engine)
 
     def df_to_html(self, df, name='table'):
-        """"""
-        # df = df.style.set_properties(**{'text-align': 'center'}).render()
+        """Writes HTML file from dataframe"""
         new_file = df.to_html(justify='center', index=False)
         new_file = new_file.replace('<table border="1" class="dataframe">',
                                     '<table style="border-top:2px solid black;'
@@ -120,39 +138,24 @@ class DBTable:
             del f
 
     def html_to_pdf(self, source_html, output_filename):
-        """"""
+        """Writes .pdf file from HTML"""
         with open(output_filename, "w+b") as f:
-            pisa_status = pisa.CreatePDF(
-                source_html,
-                dest=f)
+            pisa_status = pisa.CreatePDF(source_html, dest=f)
         return pisa_status.err
 
 
 class Data(DBTable):
-    """
-    Class for mathematical functions and model creation.
-    Inherits attributes from DBTable class. Returns best fit model as Model object.
-    """
+    """Inherits attributes from DBTable class. Returns best fit model as a Model() object."""
 
     def __init__(self, name):
         super().__init__(name)
 
     def fit_model(self, col, _ideal, r_type=None, order=1, subplot=False, print_table=True):
-        """
-        Fit a regression model with training data function.
-        :param _ideal:
-        :param r_type: Keyword arg., regression type ['linear', 'curve', 'poly', 'lorentz].
-        :param col: Column of dataframe to apply.
-        :return: Model object
-        """
+        """Fit a regression model with training data function"""
+
         col_name = f'y{col}'
         x = self.df['x'].values
-        subplot_array = []
-        _n = []
-        _rss = []
-        _rmse = []
-        _max_e = []
-        _var = []
+        subplot_array, _n, _rss, _rmse, _max_e, _var = [], [], [], [], [], []
 
         if r_type == "linear":
             lr = stats.linregress(self.df['x'], self.df[col_name])
@@ -175,7 +178,7 @@ class Data(DBTable):
             rss_max = 1000
             # Iterates through orders and returns fit with minimum residual error, with weight=1/y
             # todo: experiment with different weights, programatically (for paper, what to do next)
-            for i in range(1, order+1):
+            for i in range(1, order + 1):
                 weight = 1 / self.df[col_name]
                 fn = P.fit(self.df['x'], self.df[col_name], i, full=True, w=weight)
                 coeff, det = fn
@@ -205,4 +208,4 @@ class Data(DBTable):
                 subplot_graph.make_subplots(subplot_array)
                 return model
         else:
-            raise Exception("You must provide a type of regression via keyword arg.")
+            raise RegressionException("You must provide a type of regression via keyword arg.")
