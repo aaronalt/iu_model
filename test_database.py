@@ -20,11 +20,11 @@ class DatabaseTest(unittest.TestCase):
 
     def test_csv_to_df(self):
         self.df.to_csv('./tests/unittest.csv')
-        self._data.csv_to_df('unittest')
+        self._data.csv_to_df()
         self.assertEqual(type(pd.DataFrame()), type(self._data.df))
 
-    def test_df_to_db(self):
-        self.assertFalse(self._data.df_to_db(pd.DataFrame()))
+    def test_csv_to_db(self):
+        self.assertTrue(self._data.csv_to_db())
 
     def tearDown(self):
         try:

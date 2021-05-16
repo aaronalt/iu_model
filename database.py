@@ -80,14 +80,14 @@ class DBTable:
             self.table = Table(
                 name, meta,
                 Column('a', String), Column('b', String), Column('c', String))
-            self.table.create(engine, checkfirst=True)
+            self.table.create(self.conn, checkfirst=True)
             print('table added')
         except InvalidRequestError as ire:
             print(ire)
 
     def drop_test_table(self):
-        self.table.drop(engine, checkfirst=True)
-        inspector = inspect(engine)
+        self.table.drop(self.conn, checkfirst=True)
+        inspector = inspect(self.conn)
         print('unittest' in inspector.get_table_names())
 
     def csv_to_db(self):
@@ -95,8 +95,9 @@ class DBTable:
         self.csv_to_df()
         self.df_to_db(pd.DataFrame())
         meta.create_all(engine)
+        return True
 
-    def csv_to_df(self, test_file=None):
+    def csv_to_df(self):
         """Reads data from CSV file and converts into Pandas Dataframe"""
         if 'train' in self.name.lower():
             self.df = pd.read_csv("./datasets/train.csv")
@@ -108,7 +109,7 @@ class DBTable:
             self.df = pd.read_csv("./datasets/ideal.csv")
             return self.df
         elif 'unittest' in self.name.lower():
-            self.df = pd.read_csv(f'./tests/{test_file}.csv')
+            self.df = pd.read_csv(f'./tests/{self.name}.csv')
         else:
             raise CSVError("csv file not found")
 
