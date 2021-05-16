@@ -1,0 +1,11 @@
+pandas~=1.2.3
+sqlalchemy~=1.4.7
+matplotlib~=3.4.1
+numpy~=1.20.2
+scikit-learn~=0.24.2
+scipy~=1.6.3
+lmfit~=1.0.2
+tabulate
+xhtml2pdf
+jinja2
+seaborn
