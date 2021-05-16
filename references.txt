@@ -24,8 +24,3 @@ If you use scikit-learn in a scientific publication, we would appreciate citatio
 
 matplotlib
 https://matplotlib.org/stable/gallery/lines_bars_and_markers/fill_between_demo.html#sphx-glr-gallery-lines-bars-and-markers-fill-between-demo-py
-
-research question
-1: Model with minimum sum of residual error will not generalize as well as a higher-error, lower-order polynomial fit
-1.1: Good way to do this is using weighted-least-square (LWLR) (1/y, etc...)
-1.2:
