@@ -201,14 +201,15 @@ class Data(DBTable):
             model = Model([], [], col)
             rss_max = 1000
             # Iterates through orders and returns fit with minimum residual error, with weight=1/y
-            # todo: experiment with different weights, programatically (for paper, what to do next)
+            # todo: experiment with different weights, programmatically (for paper, what to do next)
             for i in range(1, order + 1):
                 weight = 1 / self.df[col_name]
                 fn = P.fit(self.df['x'], self.df[col_name], i, full=True, w=weight)
                 coeff, det = fn
                 fn_x, fn_y = coeff.linspace(n=400)
                 model = Model(fn_x, fn_y, col, rss=det[0], order=i)
-                if not _ideal.is_empty():  # match ideal function if ideal Data object is passed
+                # match ideal function if ideal Data object is passed
+                if not _ideal.is_empty():
                     model.find_ideal_function(_ideal)
                     _n.append(i)
                     _rss.append(model.rss)
@@ -232,4 +233,5 @@ class Data(DBTable):
                 subplot_graph.make_subplots(subplot_array)
                 return model
         else:
-            raise RegressionException("You must provide a valid type of regression via keyword arg.")
+            raise RegressionException("You must provide a valid type "
+                                      "of regression via keyword arg.")

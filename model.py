@@ -52,7 +52,8 @@ class Model:
         try:
             for i in range(1, 50):
                 col_name = f'y{i}'
-                # Compute the RMSE and max error between training function and each ideal function
+                # Compute the RMSE and max error between
+                # training function and each ideal function
                 # The smallest MRE signals the closest match between functions
                 rms_error = mean_squared_error(self.y, data.df[col_name], squared=False)
                 if rms_error < self.rmse:
