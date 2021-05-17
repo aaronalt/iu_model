@@ -8,7 +8,6 @@ from model import Model
 
 
 class DatabaseTest(unittest.TestCase):
-
     engine = create_engine("sqlite:///python_models.db", echo=True)
     meta = MetaData()
 
@@ -33,16 +32,17 @@ class DatabaseTest(unittest.TestCase):
                                columns=['x', 'y1'])
         self.df.to_csv('./tests/unittest.csv')
         self._data.csv_to_df()
-        model = self._data.fit_model(1, None, 'linear')
-        self.assertEqual(type(model), type(Model(self.df['x'], self.df['y1'], 1)))
+        with self.assertRaises(Exception):
+            self._data.fit_model(1, None, 'linear')
         # test print_table arg
         with open('./datasets/ideal.csv', 'r') as idf:
-            ideal = pd.read_csv(idf)
+            ideal = Data('ideal', _create=False)
+            ideal.csv_to_df()
+            self.assertFalse(ideal.is_empty(), 'df obj should be populated')
             model = self._data.fit_model(1, ideal, 'linear',
                                          print_table=True, table_name='./tests/unittest')
             self.assertEqual(type(model), type(Model(self.df['x'], self.df['y1'], 1)))
             self.assertEqual(model.x[0], self.df['x'][0])
-
 
     def tearDown(self):
         try:
