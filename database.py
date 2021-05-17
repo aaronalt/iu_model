@@ -208,7 +208,7 @@ class Data(DBTable):
                 coeff, det = fn
                 fn_x, fn_y = coeff.linspace(n=400)
                 model = Model(fn_x, fn_y, col, rss=det[0], order=i)
-                if _ideal:  # match ideal function if ideal Data object is passed
+                if not _ideal.is_empty():  # match ideal function if ideal Data object is passed
                     model.find_ideal_function(_ideal)
                     _n.append(i)
                     _rss.append(model.rss)
