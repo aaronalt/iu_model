@@ -29,11 +29,20 @@ class DatabaseTest(unittest.TestCase):
     def test_fit_model(self):
         with self.assertRaises(RegressionException):
             self._data.fit_model(1, Data('ideal'), 'real')
-        self.df = pd.DataFrame([[1., 2.], [4., 5.]], columns=['x', 'y1'])
+        self.df = pd.DataFrame([[1.5555555, 2.55555555], [4.5555555, 5.5555555]],
+                               columns=['x', 'y1'])
         self.df.to_csv('./tests/unittest.csv')
         self._data.csv_to_df()
         model = self._data.fit_model(1, None, 'linear')
         self.assertEqual(type(model), type(Model(self.df['x'], self.df['y1'], 1)))
+        # test print_table arg
+        with open('./datasets/ideal.csv', 'r') as idf:
+            ideal = pd.read_csv(idf)
+            model = self._data.fit_model(1, ideal, 'linear',
+                                         print_table=True, table_name='./tests/unittest')
+            self.assertEqual(type(model), type(Model(self.df['x'], self.df['y1'], 1)))
+            self.assertEqual(model.x[0], self.df['x'][0])
+
 
     def tearDown(self):
         try:

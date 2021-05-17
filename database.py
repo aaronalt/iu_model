@@ -122,7 +122,7 @@ class DBTable:
             df.to_sql(self.name, con=engine, if_exists='replace')
             meta.create_all(engine)
 
-    def df_to_html(self, df, name='table'):
+    def df_to_html(self, df, name='table', output_dir='./tables'):
         """Writes HTML file from dataframe"""
         new_file = df.to_html(justify='center', index=False)
         new_file = new_file.replace('<table border="1" class="dataframe">',
@@ -135,8 +135,7 @@ class DBTable:
         new_file = new_file.replace('<tbody>', '<tbody style="padding-top:2px;font-size:10pt;">')
 
         with open(f'{name}.html', 'w') as f:
-            self.html_to_pdf(new_file, f'./tables/{name}.pdf')  # convert to .pdf
-
+            self.html_to_pdf(new_file, f'{output_dir}/{name}.pdf')  # convert to .pdf
 
     def html_to_pdf(self, source_html, output_filename):
         """Writes .pdf file from HTML"""
@@ -146,12 +145,13 @@ class DBTable:
 
 
 class Data(DBTable):
-    """Inherits attributes from DBTable class. Returns best fit model as a Model() object."""
+    """Inherits attributes from DBTable class.
+    Returns best fit model as a Model() object."""
 
     def __init__(self, name):
         super().__init__(name)
 
-    def fit_model(self, col, _ideal, r_type, order=1, subplot=False, print_table=False):
+    def fit_model(self, col, _ideal, r_type, order=1, subplot=False, print_table=False, table_name=''):
         """Fit a regression model with training data function"""
 
         col_name = f'y{col}'
@@ -162,17 +162,25 @@ class Data(DBTable):
             lr = stats.linregress(self.df['x'], self.df[col_name])
             fun = lr.slope * x + lr.intercept
             model = Model(x, fun, col)
-            if _ideal:  # match ideal function if ideal Data object is passed
-                model.find_ideal_function(_ideal)
-                _rmse.append(model.rmse)
-                _max_e.append(model.max_dev)
-            if print_table:
-                model_df = pd.DataFrame()
-                model_df['RMSE'] = [i.round(5) for i in _rmse]
-                model_df['MRE'] = [i.round(5) for i in _max_e]
-                self.df_to_html(model_df, f'{col_name}_linear')  # added order to create unique filename
+            try:
+                # match ideal function if ideal Data object is passed
+                if not _ideal.empty:
+                    model.find_ideal_function(_ideal)
+                    _rmse.append(model.rmse)
+                    _max_e.append(model.max_dev)
+                if print_table:
+                    model_df = pd.DataFrame()
+                    model_df['RMSE'] = [i.round(5) for i in _rmse]
+                    model_df['MRE'] = [i.round(5) for i in _max_e]
+                    if not table_name:
+                        self.df_to_html(model_df, f'{col_name}_linear')
+                    else:
+                        out = table_name.rsplit('/', 1)
+                        self.df_to_html(model_df, f'{out[1]}', output_dir=out[0])
                 return model
-            return model
+            except AttributeError:
+                # raised if _ideal df is empty or None
+                return model
 
         if r_type == "poly.fit":
             model = Model([], [], col)
