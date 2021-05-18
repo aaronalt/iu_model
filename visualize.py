@@ -11,6 +11,10 @@ import seaborn as sb
 import numpy as np
 
 
+class PlotTypeException(Exception):
+    pass
+
+
 class Graph:
     """Graph object to plot models and data"""
 
@@ -123,46 +127,70 @@ class Graph:
 
             return True
 
-    def plot_model(self, model_, descr_title='', plt_type=None, error=False, with_rmse=False, fit_model=None):
+    def plot_model(self, model_, **kwargs):
         """Plot models using matplotlib"""
 
         sb.set_theme()
         col_name = f'y{model_.col}'
+
+        descr_title = kwargs.get('descr_title', '')
+        plt_type = kwargs.get('plt_type', None)
+        error = kwargs.get('error', False)
+        with_rmse = kwargs.get('with_rmse', False)
+        fit_model = kwargs.get('fit_model', None)
+        subdir = kwargs.get('subdir', './graphs')
 
         if fit_model:
             self.plt.title(f'{self.title}, {col_name} [n = {fit_model.order}]')
         else:
             self.plt.title(f'{self.title}, {col_name} [n = {model_.order}]')
 
-        if plt_type == 'best fit':
-            y = self.data[col_name]
-            self.plt.scatter(self.x, y, label="data", alpha=0.4, color='green')
+        try:
 
-            if error:
-                self.plt.fill_between(self.x, model_.y - model_.rmse, model_.y + model_.rmse,
-                                      label='+/- RMSE', alpha=0.2)
-            if with_rmse:
-                self.plt.plot(self.x, model_.ideal_col_array, "o", linewidth=0, label="ideal", color='blue')
+            if 'best fit' in plt_type:
 
-            self.plt.plot(model_.x, model_.y, "-", label="best fit", linewidth=2, color='red')
-            self.plt.xlabel('x')
-            self.plt.ylabel('y')
-            self.plt.legend()
-            self.plt.savefig(f'./graphs/{col_name}_order-{model_.order}_bestfit.pdf', bbox_inches='tight')
-            self.plt.show()
+                y = self.data[col_name]
 
-        if plt_type == 'test_vs_ideal':
-            factor = np.sqrt(fit_model.max_dev) + fit_model.max_dev
-            self.plt.fill_between(fit_model.x, fit_model.y - factor, fit_model.y + factor, alpha=0.4,
-                                  label="+/- max dev")
-            self.plt.plot(fit_model.x, fit_model.y, "--", color="green", linewidth=2, markersize=0,
-                          label="best fit")
-            self.plt.plot(self.x, self.data['y'], "o", color="blue", linewidth=0, markersize=7, label="ideal")
-            self.plt.plot(model_.x, model_.y, marker="^", color="red", linewidth=0, markersize=6,
-                          label="test")
-            self.plt.xlabel('x')
-            self.plt.ylabel('y')
-            self.plt.legend()
-            self.plt.savefig(f'./graphs/y{fit_model.col}_order-{fit_model.order}_test-vs-ideal.pdf',
-                             bbox_inches='tight')
-            self.plt.show()
+                self.plt.scatter(self.x, y,
+                                 label="data", alpha=0.4, color='green')
+
+                if error:
+                    self.plt.fill_between(self.x, model_.y - model_.rmse, model_.y + model_.rmse,
+                                          label='+/- RMSE', alpha=0.2)
+                if with_rmse:
+                    self.plt.plot(self.x, model_.ideal_col_array, "o",
+                                  linewidth=0, label="ideal", color='blue')
+
+                self.plt.plot(model_.x, model_.y, "-",
+                              label="best fit", linewidth=2, color='red')
+                self.plt.xlabel('x')
+                self.plt.ylabel('y')
+                self.plt.legend()
+                self.plt.savefig(f'{subdir}/{col_name}_order-{model_.order}_bestfit.pdf',
+                                 bbox_inches='tight')
+                self.plt.show()
+
+                return True
+
+            if 'test' in plt_type or 'vs' in plt_type or 'ideal' in plt_type:
+
+                factor = np.sqrt(fit_model.max_dev) + fit_model.max_dev
+
+                self.plt.fill_between(fit_model.x, fit_model.y - factor, fit_model.y + factor, alpha=0.4,
+                                      label="+/- max dev")
+                self.plt.plot(fit_model.x, fit_model.y, "--", color="green", linewidth=2, markersize=0,
+                              label="best fit")
+                self.plt.plot(self.x, self.data['y'], "o", color="blue", linewidth=0, markersize=7, label="ideal")
+                self.plt.plot(model_.x, model_.y, marker="^", color="red", linewidth=0, markersize=6,
+                              label="test")
+                self.plt.xlabel('x')
+                self.plt.ylabel('y')
+                self.plt.legend()
+                self.plt.savefig(f'{subdir}/y{fit_model.col}_order-{fit_model.order}_test-vs-ideal.pdf',
+                                 bbox_inches='tight')
+                self.plt.show()
+
+                return True
+
+        except TypeError:
+            raise PlotTypeException("you must provide a plot type")
