@@ -35,12 +35,12 @@ class CSVError(Exception):
 class DBTable:
     """Creates a new sqlalchemy.Table object for an SQLite database"""
 
-    def __init__(self, name, _create=True):
+    def __init__(self, name, **kwds):
         self.name = name
         self.conn = engine
         self.df = pd.DataFrame()
         self.table = Table()
-        self._create = _create
+        self._create = kwds.get('_create', True)
 
         if self._create:
             # Create graphs for SQLite
@@ -76,6 +76,9 @@ class DBTable:
                     Column("y41", Float), Column("y42", Float), Column("y43", Float), Column("y44", Float),
                     Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
                     Column("y49", Float), Column("y50", Float))
+
+            if 'to_db' in kwds.keys():
+                self.csv_to_db()
 
     def add_test_table(self, name):
         try:
@@ -155,8 +158,8 @@ class Data(DBTable):
     """Inherits attributes from DBTable class.
     Returns best fit model as a Model() object."""
 
-    def __init__(self, name, _create=True):
-        super().__init__(name, _create)
+    def __init__(self, name, **kwds):
+        super().__init__(name, **kwds)
 
     def is_empty(self):
         """Helper function to check if df of Data obj is empty"""
@@ -165,9 +168,17 @@ class Data(DBTable):
         else:
             return False
 
-    def fit_model(self, col, _ideal, r_type, order=1, subplot=False,
-                  print_table=False, table_name=''):
+    def fit_model(self, *args, **kwds):
         """Fit a regression model with training data function"""
+
+        col = args[0]
+        _ideal = args[1]
+        r_type = args[2]
+
+        order = kwds.get('order', 1)
+        subplot = kwds.get('subplot', False)
+        print_table = kwds.get('print_table', False)
+        table_name = kwds.get('table_name', '')
 
         col_name = f'y{col}'
         subplot_array, _n, _rss, _rmse, _max_e, _var = [], [], [], [], [], []

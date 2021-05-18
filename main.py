@@ -20,12 +20,8 @@ def main():
     """Main entry point of the program."""
 
     # Instatiate new Data object for training and ideal functions datasets
-    train = Data("training_data")
-    ideal = Data("ideal_functions")
-
-    # Insert Data objects into SQLite
-    train.csv_to_db()
-    ideal.csv_to_db()
+    train = Data("training_data", to_db=True)
+    ideal = Data("ideal_functions", to_db=True)
 
     '''Plot training dataset as subplots'''
     train_graph = Graph("Training Data", train.csv_to_df())
@@ -50,7 +46,7 @@ def main():
     models = {}
 
     # y1
-    nl_p = train.fit_model(1, ideal, 'poly.fit', _n['y1'][0])
+    nl_p = train.fit_model(1, ideal, 'poly.fit', order=_n['y1'][0])
     models['y1'] = nl_p
     train_graph.plot_model(nl_p, 'np.Polynomial', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_p.ideal_col] = nl_p.ideal_col_array
@@ -59,7 +55,7 @@ def main():
     train_master['y1_best_fit'] = nl_p
 
     # y2
-    nl_7 = train.fit_model(2, ideal, 'poly.fit', _n['y2'][0])
+    nl_7 = train.fit_model(2, ideal, 'poly.fit', order=_n['y2'][0])
     models['y2'] = nl_7
     train_graph.plot_model(nl_7, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_7.ideal_col] = nl_7.ideal_col_array
@@ -77,7 +73,7 @@ def main():
     train_master['y3_best_fit'] = lm_p
 
     # y4
-    cm_p = train.fit_model(4, ideal, 'poly.fit', _n['y4'][0])
+    cm_p = train.fit_model(4, ideal, 'poly.fit', order=_n['y4'][0])
     models['y4'] = cm_p
     train_graph.plot_model(cm_p, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[cm_p.ideal_col] = cm_p.ideal_col_array
@@ -112,7 +108,7 @@ def main():
     models_2 = {}
 
     # y1
-    nl_p2 = train.fit_model(1, ideal, 'poly.fit', _n['y1'][1])
+    nl_p2 = train.fit_model(1, ideal, 'poly.fit', order=_n['y1'][1])
     models_2['y1'] = nl_p2
     train_graph.plot_model(nl_p2, 'np.Polynomial', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_p.ideal_col] = nl_p2.ideal_col_array
@@ -121,7 +117,7 @@ def main():
     train_master['y1_best_fit'] = nl_p2
 
     # y2
-    nl_72 = train.fit_model(2, ideal, 'poly.fit', _n['y2'][1])
+    nl_72 = train.fit_model(2, ideal, 'poly.fit', order=_n['y2'][1])
     models_2['y2'] = nl_72
     train_graph.plot_model(nl_72, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_72.ideal_col] = nl_72.ideal_col_array
@@ -139,7 +135,7 @@ def main():
     train_master['y3_best_fit'] = lm_p2
 
     # y4
-    cm_p2 = train.fit_model(4, ideal, 'poly.fit', _n['y4'][1])
+    cm_p2 = train.fit_model(4, ideal, 'poly.fit', order=_n['y4'][1])
     models_2['y4'] = cm_p2
     train_graph.plot_model(cm_p2, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[cm_p2.ideal_col] = cm_p2.ideal_col_array
@@ -160,7 +156,7 @@ def main():
     models_3 = {}
 
     # y1
-    nl_p3 = train.fit_model(1, ideal, 'poly.fit', _n['y1'][2], print_table=True)
+    nl_p3 = train.fit_model(1, ideal, 'poly.fit', order=_n['y1'][2], print_table=True)
     models_3['y1'] = nl_p3
     train_graph.plot_model(nl_p3, 'np.Polynomial', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_p3.ideal_col] = nl_p3.ideal_col_array
@@ -169,7 +165,7 @@ def main():
     train_master['y1_best_fit'] = nl_p3
 
     # y2
-    nl_73 = train.fit_model(2, ideal, 'poly.fit', _n['y2'][2], print_table=True)
+    nl_73 = train.fit_model(2, ideal, 'poly.fit', order=_n['y2'][2], print_table=True)
     models_3['y2'] = nl_73
     train_graph.plot_model(nl_73, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[nl_73.ideal_col] = nl_73.ideal_col_array
@@ -187,7 +183,7 @@ def main():
     train_master['y3_best_fit'] = lm_p3
 
     # y4
-    cm_p3 = train.fit_model(4, ideal, 'poly.fit', _n['y4'][2], print_table=True)
+    cm_p3 = train.fit_model(4, ideal, 'poly.fit', order=_n['y4'][2], print_table=True)
     models_3['y4'] = cm_p3
     train_graph.plot_model(cm_p3, 'poly.fit', 'best fit', with_rmse=True)
     ideal_funs_dict[cm_p3.ideal_col] = cm_p3.ideal_col_array
