@@ -21,11 +21,20 @@ class ModelTest(unittest.TestCase):
         with open('./datasets/ideal.csv', 'r') as csv:
             idealData = Data('ideal', _create=False)
             idealData.csv_to_df()
-            self.assertEqual(self.testModel.__getattribute__('rmse'), 1000)
+            self.assertEqual(self.testModel.__getattribute__('rmse'), 1000,
+                             'rmse should be at the default 1000')
             self.testModel.find_ideal_function(idealData)
             self.assertNotEqual(self.testModel.__getattribute__('rmse'), 1000,
                                 'rmse should change after function runs')
-            self.assertTrue(self.testModel.__getattribute__('ideal_col'))
+            self.assertTrue(self.testModel.__getattribute__('ideal_col'),
+                            'ideal_col should change after function runs')
+            self.assertNotEqual(self.testModel.__getattribute__('max_dev'), 1000,
+                                'max_dev should change after function runs')
+            self.assertNotEqual(self.testModel.df.size, 0,
+                                'Model() df should be init')
+
+    # def test_match_ideal_functions(self):
+
 
 
 if __name__ == '__main__':

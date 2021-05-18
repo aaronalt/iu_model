@@ -20,11 +20,9 @@ class Model:
         self.y = y
         self.col = col
         self.rmse = 1000
-        self.max_rmse = 100000
         self.test_rmse = 0
         self.max_dev = 1000
         self.__max_dev = 1000
-        self.var = 0
         self.rss = rss
         self.order = order
         self.__bf = ""
@@ -65,12 +63,6 @@ class Model:
                     self.ideal_col_array = data.df[col_name]
         except ValueError:
             print("polynomial needs work")
-
-        try:
-            self.max_dev = max_error(self.y, data.df[self.ideal_col])
-            self.var = data.df.var()[self.ideal_col]
-        except KeyError:
-            print("poly still needs work")
 
     def match_ideal_functions(self, ideal_funs, train_df, models_):
         """Match test data with its associated ideal function"""

@@ -215,7 +215,6 @@ class Data(DBTable):
                     _rss.append(model.rss)
                     _rmse.append(model.rmse)
                     _max_e.append(model.max_dev)
-                    _var.append(model.var)
                 if det[0] < rss_max:
                     subplot_array.append(model)
             if print_table:
