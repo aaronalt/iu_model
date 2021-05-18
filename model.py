@@ -147,7 +147,7 @@ class Model:
             t_df = pd.DataFrame()
             t_df['x'] = t_x
             t_df['y'] = t_y
-            plot_ = Graph(f'Ideal vs. Test', t_df)
+            plot_ = Graph(f'Ideal vs. Test', df=t_df)
             model = Model(id_x, id_y, ideal_[1:])
 
             # identify max error of training function
@@ -163,6 +163,6 @@ class Model:
             models[k] = model.__bf
 
             # plot graph
-            plot_.plot_model(model, '', 'test_vs_ideal', fit_model=model.__bf)
+            plot_.plot_model(model, plt_type='test_vs_ideal', fit_model=model.__bf)
 
         return self.df, models

@@ -18,10 +18,10 @@ class PlotTypeException(Exception):
 class Graph:
     """Graph object to plot models and data"""
 
-    def __init__(self, title, df=pd.DataFrame()):
+    def __init__(self, title, **kwargs):
         self.title = title
         self.plt = plt
-        self.data = df
+        self.data = kwargs.get('df', pd.DataFrame())
         self.x = self.data['x']
 
     def make_subplots(self, title, **kwargs):

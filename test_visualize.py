@@ -18,7 +18,7 @@ class VisualizeTest(unittest.TestCase):
         self.df['y3'] = rand_y
         self.df['y4'] = rand_y
         self.df.sort_values(by=['x', 'y1', 'y2', 'y3', 'y4'], inplace=True)
-        self.testGraph = Graph('train', self.df)
+        self.testGraph = Graph('train', df=self.df)
         self.subdir = './tests'
 
         self.m1 = Model(self.df['x'], self.df['y1'], 1, rss=0.02345, order=1)
@@ -39,7 +39,7 @@ class VisualizeTest(unittest.TestCase):
 
         # test model comparison
 
-        testGraphTest = Graph('model', self.df)
+        testGraphTest = Graph('model', df=self.df)
         tg = testGraphTest.make_subplots('model',
                                          models={'m1': self.m1d, 'm2': self.m2d, 'm3': self.m3d},
                                          subdir=self.subdir)
@@ -52,9 +52,19 @@ class VisualizeTest(unittest.TestCase):
         with self.assertRaises(PlotTypeException):
             self.testGraph.plot_model(self.m1)
         self.assertTrue(self.testGraph.plot_model(
-            self.m1, plt_type='best fit', subdir='./tests'
+            self.m1, plt_type='best fit', subdir='./tests')
         )
-)
+
+        rand_x, rand_y = np.random.randint(-20, 20, size=400), \
+                        np.random.randint(-1000, 1000, size=400)
+        df = pd.DataFrame()
+        df['x'] = rand_x
+        df['y'] = rand_y
+        fit_model = Model(df['x'], df['y'], 1)
+        testGraph = Graph('idealtest', df=df)
+        self.assertTrue(testGraph.plot_model(
+            fit_model, plt_type='ideal', subdir='./tests', fit_model=fit_model)
+        )
 
 
 if __name__ == '__main__':
