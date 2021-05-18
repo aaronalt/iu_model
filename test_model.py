@@ -36,6 +36,5 @@ class ModelTest(unittest.TestCase):
     # def test_match_ideal_functions(self):
 
 
-
 if __name__ == '__main__':
     unittest.main()

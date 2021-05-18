@@ -20,11 +20,17 @@ class Graph:
         self.data = df
         self.x = self.data['x']
 
-    def make_subplots(self, title=str(), model_1=None, model_2=None, model_3=None):
+    def make_subplots(self, title, **kwargs):
         """Plot multiple subplots at once"""
 
         sb.set_theme()
         idx = 0
+
+        subdir = kwargs.get('subdir', './graphs')
+        if 'models' in kwargs.keys():
+            model_1 = kwargs['models'].get('m1')
+            model_2 = kwargs['models'].get('m2')
+            model_3 = kwargs['models'].get('m3')
 
         if 'train' in title.lower():
             fig, axs = self.plt.subplots(4, 1, sharex=True)
@@ -33,7 +39,12 @@ class Graph:
                     temp = self.data[i]
                     y = [float(i) for i in temp.to_list()]
                     y_label = f'y{int(idx) + 1}'
-                    axs[idx].plot(self.x, y, color='green', alpha=0.8, marker='o', linewidth=0, markersize=2)
+                    axs[idx].plot(self.x, y,
+                                  color='green',
+                                  alpha=0.8,
+                                  marker='o',
+                                  linewidth=0,
+                                  markersize=2)
                     axs[idx].set(ylabel=y_label)
                     if idx == 0:
                         axs[idx].set(title=self.title)
@@ -41,9 +52,11 @@ class Graph:
 
             fig.align_ylabels()
             axs[idx - 1].set(xlabel='x')
+
             self.plt.tight_layout()
-            self.plt.savefig(f'./graphs/{title}.pdf', bbox_inches='tight')
+            self.plt.savefig(f'{subdir}/{title}.pdf', bbox_inches='tight')
             self.plt.show()
+            return True
 
         if 'model' in title.lower():
 

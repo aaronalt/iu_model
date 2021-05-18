@@ -35,16 +35,16 @@ class CSVError(Exception):
 class DBTable:
     """Creates a new sqlalchemy.Table object for an SQLite database"""
 
-    def __init__(self, name, **kwds):
-        self.name = name
+    def __init__(self, *names, **kwargs):
+        self.name, = names
         self.conn = engine
         self.df = pd.DataFrame()
         self.table = Table()
-        self._create = kwds.get('_create', True)
+        self._create = kwargs.get('_create', True)
 
         if self._create:
             # Create graphs for SQLite
-            if 'train' in self.name.lower():
+            if 'train' in self.name:
                 self.table = Table(
                     "training_data", meta,
                     Column("x", Float, primary_key=True),
@@ -52,14 +52,14 @@ class DBTable:
                     Column("y2", Float),
                     Column("y3", Float),
                     Column("y4", Float))
-            if 'test_' in self.name.lower():
+            if 'test_' in self.name:
                 self.table = Table(
                     "test_data", meta,
                     Column("x", Float, primary_key=True),
                     Column("y", Float),
                     Column("delta y", Float),
                     Column("ideal function", Float))
-            if 'ideal' in self.name.lower():
+            if 'ideal' in self.name:
                 self.table = Table(
                     "ideal_functions", meta,
                     Column("x", Float, primary_key=True),
@@ -77,7 +77,7 @@ class DBTable:
                     Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
                     Column("y49", Float), Column("y50", Float))
 
-            if 'to_db' in kwds.keys():
+            if 'to_db' in kwargs.keys():
                 self.csv_to_db()
 
     def add_test_table(self, name):
@@ -105,16 +105,16 @@ class DBTable:
 
     def csv_to_df(self):
         """Reads data from CSV file and converts into Pandas Dataframe"""
-        if 'train' in self.name.lower():
+        if 'train' in self.name:
             self.df = pd.read_csv("./datasets/train.csv")
             return self.df
-        elif 'test_' in self.name.lower():
+        elif 'test_' in self.name:
             self.df = pd.read_csv("./datasets/test.csv")
             return self.df
-        elif 'ideal' in self.name.lower():
+        elif 'ideal' in self.name:
             self.df = pd.read_csv("./datasets/ideal.csv")
             return self.df
-        elif 'unittest' in self.name.lower():
+        elif 'unittest' in self.name:
             self.df = pd.read_csv(f'./tests/{self.name}.csv')
         else:
             raise CSVError("csv file not found")
@@ -158,8 +158,8 @@ class Data(DBTable):
     """Inherits attributes from DBTable class.
     Returns best fit model as a Model() object."""
 
-    def __init__(self, name, **kwds):
-        super().__init__(name, **kwds)
+    def __init__(self, *names, **kwargs):
+        super().__init__(*names, **kwargs)
 
     def is_empty(self):
         """Helper function to check if df of Data obj is empty"""
@@ -168,17 +168,17 @@ class Data(DBTable):
         else:
             return False
 
-    def fit_model(self, *args, **kwds):
+    def fit_model(self, *args, **kwargs):
         """Fit a regression model with training data function"""
 
         col = args[0]
         _ideal = args[1]
         r_type = args[2]
 
-        order = kwds.get('order', 1)
-        subplot = kwds.get('subplot', False)
-        print_table = kwds.get('print_table', False)
-        table_name = kwds.get('table_name', '')
+        order = kwargs.get('order', 1)
+        subplot = kwargs.get('subplot', False)
+        print_table = kwargs.get('print_table', False)
+        table_name = kwargs.get('table_name', '')
 
         col_name = f'y{col}'
         subplot_array, _n, _rss, _rmse, _max_e, _var = [], [], [], [], [], []

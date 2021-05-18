@@ -10,7 +10,6 @@ from model import Model
 from visualize import Graph
 import pandas as pd
 
-
 engine = create_engine("sqlite:///python_models.db", echo=True)
 meta = MetaData()
 pd.set_option('display.float_format', lambda x: '%.5f' % x)
@@ -19,9 +18,8 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 def main():
     """Main entry point of the program."""
 
-    # Instatiate new Data object for training and ideal functions datasets
-    train = Data("training_data", to_db=True)
-    ideal = Data("ideal_functions", to_db=True)
+    # Instantiate new Data objects
+    train, ideal = Data("training_data", to_db=True), Data("ideal_functions", to_db=True)
 
     '''Plot training dataset as subplots'''
     train_graph = Graph("Training Data", train.csv_to_df())
@@ -42,7 +40,7 @@ def main():
     # Empty data objects to hold created models, processed data
     ideal_funs_dict = {'x': train.df['x']}
     train_master = train.csv_to_df()
-    #train.df_to_html(train_master)
+    # train.df_to_html(train_master)
     models = {}
 
     # y1
@@ -198,7 +196,8 @@ def main():
     test_df_3, _tm3 = test_model.match_ideal_functions(ideal_funs_df, train_master, models_3)
 
     # Plot comparisons between polynomial orders for each training function
-    train_graph.make_subplots('Model Comparison', model_1=models, model_2=models_2, model_3=models_3)
+    train_graph.make_subplots('Model Comparison',
+                              models={'m1': models, 'm2': models_2, 'm3': models_3})
 
     # Insert test df into database
     # test.df_to_db(new_test_df)
