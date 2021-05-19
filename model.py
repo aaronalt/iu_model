@@ -64,12 +64,13 @@ class Model:
         except ValueError:
             print("polynomial needs work")
 
-    def match_ideal_functions(self, ideal_funs, train_df, models_):
+    def match_ideal_functions(self, *args, **kwargs):
         """Match test data with its associated ideal function"""
 
         dev_list, funs_list = [], []
         idx = 0
-
+        ideal_funs, train_df, models_ = args[0], args[1], args[2]
+        map_train = kwargs.get('map_train', True)
         for row in self.df.itertuples(index=False):
             column, diff = "", 100000
             for c in ideal_funs.keys():
@@ -86,7 +87,7 @@ class Model:
         self.df.sort_values(by=['ideal_fun', 'x'], inplace=True)
 
         # Check if each ideal function is within the threshold of error
-        # Turn value into NaN if so
+        # Turn value into NaN if not
         for row in self.df.itertuples(index=False):
             for i, j in models_.items():
                 if row.ideal_fun == j.ideal_col:
@@ -95,7 +96,10 @@ class Model:
                         self.df.iat[idx, 3] = 'n/a'
             idx += 1
 
-        return self.map_test_with_train(train_df)
+        if map_train:
+            return self.map_test_with_train(train_df)
+        else:
+            return self.df
 
     def map_test_with_train(self, train_df):
         """Maps new test data with training function, to be plotted"""

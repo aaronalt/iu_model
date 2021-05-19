@@ -193,6 +193,7 @@ def main():
     ideal_funs_df = pd.DataFrame(data=ideal_funs_dict)
     ideal_funs_df = ideal_funs_df.set_index('x')
     test_model = Model(test_df['x'], test_df['y'], 1, df=test_df)
+    print(f'ideal funs df: \n{ideal_funs_df}')
     test_df_3, _tm3 = test_model.match_ideal_functions(ideal_funs_df, train_master, models_3)
 
     # Plot comparisons between polynomial orders for each training function
