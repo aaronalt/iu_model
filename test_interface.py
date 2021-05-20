@@ -1,4 +1,5 @@
 import unittest
+import pandas as pd
 
 from interface import Interface, NSizeError
 
@@ -22,16 +23,17 @@ class InterfaceTest(unittest.TestCase):
                        _n=self._n,
                        to_db=False,
                        create_tables=False)
-        self.assertEqual(type(df), type(df),
+        self.assertEqual(type(pd.DataFrame()), type(df.result),
                          'should return pandas df')
 
     def test_with_plot(self):
-        df = Interface(map_train=False,
-                       _n=self._n,
-                       to_db=False,
-                       create_tables=False)
-        self.assertEqual(type(df), type(df),
+        df = Interface(map_train=True,
+                           _n=self._n,
+                           to_db=False,
+                           create_tables=False)
+        self.assertEqual(type(tuple()), type(df.result),
                          'should return pandas df')
+        self.assertEqual(type(dict()), type(df.result[1]))
 
     def test_n_size(self):
         n = {
@@ -44,13 +46,14 @@ class InterfaceTest(unittest.TestCase):
                            _n=n,
                            to_db=False,
                            create_tables=False)
-            print(df)
         df = Interface(map_train=False,
                        _n=self._n,
                        to_db=False,
                        create_tables=False)
-        self.assertEqual(type(df), type(df),
+        self.assertEqual(type(pd.DataFrame()), type(df.result),
                          'should return pandas df')
+
+    # def test_compare_models(self):
 
 
 if __name__ == '__main__':

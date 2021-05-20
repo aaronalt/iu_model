@@ -10,11 +10,6 @@ from visualize import Graph
 import pandas as pd
 
 
-def map_and_compare(*args):
-    """returns either self.df and models, or only self.df without running Model functions"""
-    return args
-
-
 class NSizeError(Exception):
     pass
 
@@ -78,6 +73,7 @@ class Interface:
         continue_matching = kwargs.get('continue_matching', True)
 
         self.models = dict()
+        self.result = tuple()
 
         global model
 
@@ -104,8 +100,8 @@ class Interface:
             self.ideal_fn_df = pd.DataFrame(data=self.ideal_fn_dict)
             self.ideal_fn_df = self.ideal_fn_df.set_index('x')
 
-            test_df = self.test.csv_to_df()
-            test_model = Model(test_df['x'], test_df['y'], 1, df=test_df)
+            self.test_df = self.test.csv_to_df()
+            test_model = Model(self.test_df['x'], self.test_df['y'], 1, df=self.test_df)
 
             finals = test_model.match_ideal_functions(self.ideal_fn_df,
                                                       self.train_master,
@@ -114,9 +110,8 @@ class Interface:
 
             if 'run_complete' in kwargs.keys():
                 self.test.df_to_db(finals[0])
-                map_and_compare(finals)
             else:
-                map_and_compare(finals)
+                self.result = finals
 
     def _fit(self, n):
 
