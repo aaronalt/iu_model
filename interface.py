@@ -73,12 +73,14 @@ class Interface:
         continue_matching = kwargs.get('continue_matching', True)
 
         self.models = dict()
+        self.models_master = dict()
         self.result = tuple()
 
         global model
 
         if 'compare_models' in kwargs.keys():
             models = kwargs.get('compare_models')
+            print(models)
             self.train_graph.make_subplots('Model Comparison',
                                            models={'m1': models['m1'],
                                                    'm2': models['m2'],
@@ -128,7 +130,7 @@ class Interface:
                 model = self.train.fit_model(
                     i, self.ideal, 'linear',
                     print_table=self.print_table)
-            print(f'{col}: ideal_col_array:\n{model.ideal_col_array}')
+
             self.models[col] = model
             self.ideal_fn_dict[model.ideal_col] = model.ideal_col_array
             self.train_master[_if] = model.ideal_col
@@ -139,3 +141,9 @@ class Interface:
                 self.train_graph.plot_model(model,
                                             plt_type=self.plt_type,
                                             with_rmse=self.with_rmse)
+        if not self.models_master.get('m1', None):
+            self.models_master['m1'] = self.models
+        elif not self.models_master.get('m2', None):
+            self.models_master['m2'] = self.models
+        elif not self.models_master.get('m3', None):
+            self.models_master['m3'] = self.models

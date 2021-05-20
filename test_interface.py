@@ -28,9 +28,9 @@ class InterfaceTest(unittest.TestCase):
 
     def test_with_plot(self):
         df = Interface(map_train=True,
-                           _n=self._n,
-                           to_db=False,
-                           create_tables=False)
+                       _n=self._n,
+                       to_db=False,
+                       create_tables=False)
         self.assertEqual(type(tuple()), type(df.result),
                          'should return pandas df')
         self.assertEqual(type(dict()), type(df.result[1]))
@@ -53,7 +53,15 @@ class InterfaceTest(unittest.TestCase):
         self.assertEqual(type(pd.DataFrame()), type(df.result),
                          'should return pandas df')
 
-    # def test_compare_models(self):
+    def test_compare_models(self):
+        df = Interface(map_train=True,
+                       _n=self._n,
+                       to_db=False,
+                       create_tables=False)
+
+        df2 = Interface(continue_matching=False,
+                        compare_models=df.result[1])
+        self.assert_(df2)
 
 
 if __name__ == '__main__':
