@@ -84,7 +84,6 @@ class Interface:
                      'y4': self._n['y4'].pop()}
                 self._fit(n)
 
-            print(f'ideal fn dict: \n{self.ideal_fn_dict}')
             self.ideal_fn_df = pd.DataFrame(data=self.ideal_fn_dict)
             self.ideal_fn_df = self.ideal_fn_df.set_index('x')
 
