@@ -60,8 +60,9 @@ class InterfaceTest(unittest.TestCase):
                        create_tables=False)
 
         df2 = Interface(continue_matching=False,
-                        compare_models=df.result[1])
-        self.assert_(df2)
+                        compare_models={'m1': df.models_master_1,
+                                        'm2': df.models_master_2,
+                                        'm3': df.models_master_3})
 
 
 if __name__ == '__main__':

@@ -30,15 +30,11 @@ def main():
                    _n=_n,
                    to_db=False,
                    create_tables=False)
-    print(f'mm_1: {df.models_master_1}')
-    print(f'mm_2: {df.models_master_2}')
-    print(f'mm_3: {df.models_master_3}')
 
     df2 = Interface(continue_matching=False,
                     compare_models={'m1': df.models_master_1,
                                     'm2': df.models_master_2,
                                     'm3': df.models_master_3})
-
     return df2
 
     # Instantiate new Data objects
