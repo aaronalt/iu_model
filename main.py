@@ -19,16 +19,15 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 def main():
     """Main entry point of the program."""
 
-    #
+    # Set polynomial order for
     _n = {
-        'y1': [5, 21, 36],
-        'y2': [5, 22, 36],
+        'y1': [1, 20, 40],
+        'y2': [1, 20, 40],
         'y4': [3, 9, 27]
     }
 
-    df = Interface(map_train=True,
-                   _n=_n,
-                   to_db=False,
+    df = Interface(_n=_n,
+                   to_db=True,  # set to 'False' for future iterations
                    create_tables=False,
                    plot_training_subplots=True)
 
@@ -39,6 +38,7 @@ def main():
 
     '''
     What did we discover from 1st iteration:
+    
     - fn(y1) could use a lower-order polynomial for a more general fit without overfitting
       - test: lower order vs. 1st best fit
     - fn(y2): same as y1
@@ -47,23 +47,9 @@ def main():
     - fn(y4): best order is 3, but can rss be reduced? still too large 
     '''
 
-    #
-    _n = {
-        'y1': [5, 21, 36],
-        'y2': [5, 22, 36],
-        'y4': [3, 9, 27]
-    }
 
-    df = Interface(map_train=True,
-                   _n=_n,
-                   to_db=False,
-                   create_tables=False,
-                   plot_training_subplots=True)
 
-    df2 = Interface(continue_matching=False,
-                    compare_models={'m1': df.models_master_1,
-                                    'm2': df.models_master_2,
-                                    'm3': df.models_master_3})
+
 
 
     """# Instantiate new Data objects
@@ -240,8 +226,6 @@ def main():
     # Plot comparisons between polynomial orders for each training function
     train_graph.make_subplots('Model Comparison',
                               models={'m1': models, 'm2': models_2, 'm3': models_3})"""
-
-
 
 
 if __name__ == "__main__":

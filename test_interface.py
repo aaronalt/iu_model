@@ -65,7 +65,11 @@ class InterfaceTest(unittest.TestCase):
                                         'm3': df.models_master_3})
 
     def test_run_complete(self):
-
+        df = Interface(map_train=True,
+                       _n=self._n,
+                       to_db=False,
+                       create_tables=False,
+                       run_complete=True)
 
 
 if __name__ == '__main__':
