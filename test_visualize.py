@@ -25,9 +25,10 @@ class VisualizeTest(unittest.TestCase):
         self.m2 = Model(self.df['x'], self.df['y2'], 1, rss=0.02345, order=2)
         self.m3 = Model(self.df['x'], self.df['y3'], 1, rss=0.12345, order=3)
         self.m4 = Model(self.df['x'], self.df['y4'], 1, rss=0.12345, order=4)
-        self.m1d = {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}
-        self.m2d = {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}
-        self.m3d = {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}
+
+        self.m1d = {'m1': {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}}
+        self.m2d = {'m2': {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}}
+        self.m3d = {'m3': {'y1': self.m1, 'y2': self.m2, 'y3': self.m3, 'y4': self.m4}}
 
     def test_make_subplots(self):
         testGraphPlots = self.testGraph.make_subplots(
