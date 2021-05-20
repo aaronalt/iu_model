@@ -13,8 +13,8 @@ from xhtml2pdf import pisa
 from model import Model
 from visualize import Graph
 
-engine = create_engine("sqlite:///python_models.db", echo=True)
 meta = MetaData()
+engine = create_engine("sqlite:///python_models.db", echo=True)
 
 
 class TableNotCreatedException(Exception):
@@ -40,45 +40,53 @@ class DBTable:
         self.conn = engine
         self.df = pd.DataFrame()
         self.table = Table()
-        self._create = kwargs.get('_create', True)
 
-        if self._create:
-            # Create graphs for SQLite
-            if 'train' in self.name:
-                self.table = Table(
-                    "training_data", meta,
-                    Column("x", Float, primary_key=True),
-                    Column("y1", Float),
-                    Column("y2", Float),
-                    Column("y3", Float),
-                    Column("y4", Float))
-            if 'test_' in self.name:
-                self.table = Table(
-                    "test_data", meta,
-                    Column("x", Float, primary_key=True),
-                    Column("y", Float),
-                    Column("delta y", Float),
-                    Column("ideal function", Float))
-            if 'ideal' in self.name:
-                self.table = Table(
-                    "ideal_functions", meta,
-                    Column("x", Float, primary_key=True),
-                    Column("y1", Float), Column("y2", Float), Column("y3", Float), Column("y4", Float),
-                    Column("y5", Float), Column("y6", Float), Column("y7", Float), Column("y8", Float),
-                    Column("y9", Float), Column("y10", Float), Column("y11", Float), Column("y12", Float),
-                    Column("y13", Float), Column("y14", Float), Column("y15", Float), Column("y16", Float),
-                    Column("y17", Float), Column("y18", Float), Column("y19", Float), Column("y20", Float),
-                    Column("y21", Float), Column("y22", Float), Column("y23", Float), Column("y24", Float),
-                    Column("y25", Float), Column("y26", Float), Column("y27", Float), Column("y28", Float),
-                    Column("y29", Float), Column("y30", Float), Column("y31", Float), Column("y32", Float),
-                    Column("y33", Float), Column("y34", Float), Column("y35", Float), Column("y36", Float),
-                    Column("y37", Float), Column("y38", Float), Column("y39", Float), Column("y40", Float),
-                    Column("y41", Float), Column("y42", Float), Column("y43", Float), Column("y44", Float),
-                    Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
-                    Column("y49", Float), Column("y50", Float))
+        _create = kwargs.get('_create', True)
+        to_db = kwargs.get('to_db', True)
 
-            if 'to_db' in kwargs.keys():
+        if _create:
+            try:
+                # Create graphs for SQLite
+                if 'train' in self.name:
+                    self.table = Table(
+                        "training_data", meta,
+                        Column("x", Float, primary_key=True),
+                        Column("y1", Float),
+                        Column("y2", Float),
+                        Column("y3", Float),
+                        Column("y4", Float))
+                if 'test_' in self.name:
+                    self.table = Table(
+                        "test_data", meta,
+                        Column("x", Float, primary_key=True),
+                        Column("y", Float),
+                        Column("delta y", Float),
+                        Column("ideal function", Float))
+                if 'ideal' in self.name:
+                    self.table = Table(
+                        "ideal_functions", meta,
+                        Column("x", Float, primary_key=True),
+                        Column("y1", Float), Column("y2", Float), Column("y3", Float), Column("y4", Float),
+                        Column("y5", Float), Column("y6", Float), Column("y7", Float), Column("y8", Float),
+                        Column("y9", Float), Column("y10", Float), Column("y11", Float), Column("y12", Float),
+                        Column("y13", Float), Column("y14", Float), Column("y15", Float), Column("y16", Float),
+                        Column("y17", Float), Column("y18", Float), Column("y19", Float), Column("y20", Float),
+                        Column("y21", Float), Column("y22", Float), Column("y23", Float), Column("y24", Float),
+                        Column("y25", Float), Column("y26", Float), Column("y27", Float), Column("y28", Float),
+                        Column("y29", Float), Column("y30", Float), Column("y31", Float), Column("y32", Float),
+                        Column("y33", Float), Column("y34", Float), Column("y35", Float), Column("y36", Float),
+                        Column("y37", Float), Column("y38", Float), Column("y39", Float), Column("y40", Float),
+                        Column("y41", Float), Column("y42", Float), Column("y43", Float), Column("y44", Float),
+                        Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
+                        Column("y49", Float), Column("y50", Float))
+            except InvalidRequestError:
+                print('table already created')
+                pass
+
+            if to_db:
                 self.csv_to_db()
+            else:
+                self.csv_to_df()
 
     def add_test_table(self, name):
         try:

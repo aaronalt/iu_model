@@ -6,6 +6,7 @@ Data Science, M.Sc.
 
 from sqlalchemy import create_engine, MetaData
 from database import Data
+from interface import Interface
 from model import Model
 from visualize import Graph
 import pandas as pd
@@ -18,8 +19,23 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 def main():
     """Main entry point of the program."""
 
+    # should return models, train master dicts each time
+    _n = {
+        'y1': [5, 21, 36],
+        'y2': [5, 22, 36],
+        'y4': [3, 9, 27]
+    }
+
+    run = Interface(plot=False,
+                    map_train=False,
+                    _n=_n,
+                    to_db=False,
+                    create_tables=False)
+
+    return run
+
     # Instantiate new Data objects
-    train, ideal = Data("training_data", to_db=True), Data("ideal_functions", to_db=True)
+    train, ideal, test = Data("training_data", to_db=True), Data("ideal_functions", to_db=True), Data("test_data")
 
     '''Plot training dataset as subplots'''
     train_graph = Graph("Training Data", df=train.csv_to_df())
@@ -37,6 +53,7 @@ def main():
     '''
 
     # 1st iteration
+
     # Empty data objects to hold created models, processed data
     ideal_funs_dict = {'x': train.df['x']}
     train_master = train.csv_to_df()
@@ -202,8 +219,6 @@ def main():
 
     # Insert test df into database
     # test.df_to_db(new_test_df)
-
-    # todo: unit tests
 
 
 if __name__ == "__main__":

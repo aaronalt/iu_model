@@ -71,13 +71,22 @@ class Model:
         idx = 0
         ideal_funs, train_df, models_ = args[0], args[1], args[2]
         map_train = kwargs.get('map_train', True)
+
         for row in self.df.itertuples(index=False):
             column, diff = "", 100000
-            for c in ideal_funs.keys():
-                rmse = mean_squared_error([row.y], [ideal_funs.at[row.x, c]], squared=False)
-                if rmse < diff:
-                    diff = rmse
-                    column = c
+            try:
+                for c in ideal_funs.keys():
+                    rmse = mean_squared_error([row.y], [ideal_funs.at[row.x, c]],
+                                              squared=False)
+                    if rmse < diff:
+                        diff = rmse
+                        column = c
+            except KeyError as e:
+                print(e)
+                continue
+            except ValueError as v:
+                print(v)
+                continue
             dev_list.append(diff)
             funs_list.append(column)
 

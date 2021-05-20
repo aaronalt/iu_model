@@ -1,5 +1,7 @@
 import unittest
 
+from sklearn.metrics import mean_squared_error
+
 from database import Data
 from model import Model
 import pandas as pd
@@ -51,42 +53,6 @@ class ModelTest(unittest.TestCase):
                                 'max_dev should change after function runs')
             self.assertNotEqual(self.testModel.df.size, 0,
                                 'Model() df should be init')
-
-    def test_match_ideal_functions(self):
-        with open('./datasets/ideal.csv', 'r') as csv:
-            with open('./datasets/train.csv', 'r') as train:
-                idealData = Data('ideal', _create=False)
-                ideal_funs = idealData.csv_to_df()
-                ideal_funs.set_index('x')
-
-                # build train_master df
-                trainDf = pd.read_csv(train)
-                for i in range(1, 4):
-                    _if = f'y{i}_if'
-                    _ifN = f'y{i+1}'
-                    _max = f'y{i}_max_err'
-                    _maxN = np.random.randint(0.0001, 999.9999, size=400)
-                    _bf = f'y{i}_best_fit'
-                    _bfN = f'y{i+10}'
-                    trainDf[_if] = _ifN
-                    trainDf[_max] = _maxN
-                    trainDf[_bf] = _bfN
-
-                newTestModel = self.testModel.df.reset_index(drop=True)
-                self.testModel.__setattr__('df', newTestModel)
-                ideal_funs = ideal_funs.set_index('x')
-
-                for row in newTestModel.itertuples(index=False):
-                    print(row.x, row.y)
-                    for c in ideal_funs.keys():
-                        print(c)
-                        print(f'taking RMSE of:\n{[row.y]} '
-                              f'and {[ideal_funs.at[row.x, c]]}')
-
-                newTest = self.testModel.match_ideal_functions(
-                    ideal_funs, trainDf, self.m1d, map_train=False
-                )
-                self.assertTrue(newTest)
 
 
 if __name__ == '__main__':
