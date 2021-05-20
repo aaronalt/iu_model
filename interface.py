@@ -15,6 +15,21 @@ def map_and_compare(*args):
     return args
 
 
+class NSizeError(Exception):
+    pass
+
+
+def check_n_size(n):
+    size = [len(i) for i in n.values()]
+    if len(n) == 3 \
+            and len(n) == size[0] \
+            and len(n) == size[1] \
+            and len(n) == size[2]:
+        return True
+    else:
+        raise NSizeError('_n size does not match')
+
+
 class Interface:
     """
 
@@ -77,6 +92,8 @@ class Interface:
             self.train_graph.make_subplots(self.train_graph.title)
 
         if continue_matching:
+
+            check_n_size(self._n)
 
             while self._n['y1']:
                 n = {'y1': self._n['y1'].pop(),
