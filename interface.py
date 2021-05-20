@@ -59,7 +59,6 @@ class Interface:
         self.print_table = kwargs.get('print_table', True)
         self.plot = kwargs.get('plot', True)
 
-        drop_tables_after = kwargs.get('drop_tables_after', False)
         map_train = kwargs.get('map_train', True)
         continue_matching = kwargs.get('continue_matching', True)
 
@@ -96,11 +95,6 @@ class Interface:
                                                       self.train_master,
                                                       self.models,
                                                       map_train=map_train)
-
-            if drop_tables_after:
-                self.train.drop_test_table()
-                self.ideal.drop_test_table()
-                self.test.drop_test_table()
 
             if 'run_complete' in kwargs.keys():
                 self.test.df_to_db(finals[0])

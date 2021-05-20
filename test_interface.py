@@ -7,8 +7,7 @@ class InterfaceTest(unittest.TestCase):
 
     def test_training_subplots(self):
         self.assertTrue(Interface(plot_training_subplots=True,
-                                  continue_matching=False,
-                                  drop_tables_after=True))
+                                  continue_matching=False))
 
     def test_without_plot(self):
         _n = {
