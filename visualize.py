@@ -55,7 +55,9 @@ class Graph:
 
             self.plt.tight_layout()
             self.plt.savefig(f'{subdir}/{title}.pdf', bbox_inches='tight')
-            self.plt.show()
+            self.plt.show(block=False)
+            self.plt.pause(1)
+            self.plt.close()
             return True
 
         if 'model' in title.lower():
@@ -123,7 +125,9 @@ class Graph:
 
                     fig.subplots_adjust(wspace=0.1)
                     self.plt.savefig(f'{subdir}/{fn}_{title}.pdf', bbox_inches='tight')
-                    self.plt.show()
+                    self.plt.show(block=False)
+                    self.plt.pause(1)
+                    self.plt.close()
 
             return True
 
@@ -168,7 +172,9 @@ class Graph:
                 self.plt.legend()
                 self.plt.savefig(f'{subdir}/{col_name}_order-{model_.order}_bestfit.pdf',
                                  bbox_inches='tight')
-                self.plt.show()
+                self.plt.show(block=False)
+                self.plt.pause(1)
+                self.plt.close()
 
                 return True
 
@@ -188,7 +194,9 @@ class Graph:
                 self.plt.legend()
                 self.plt.savefig(f'{subdir}/y{fit_model.col}_order-{fit_model.order}_test-vs-ideal.pdf',
                                  bbox_inches='tight')
-                self.plt.show()
+                self.plt.show(block=False)
+                self.plt.pause(1)
+                self.plt.close()
 
                 return True
 
