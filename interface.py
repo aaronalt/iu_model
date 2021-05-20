@@ -73,14 +73,15 @@ class Interface:
         continue_matching = kwargs.get('continue_matching', True)
 
         self.models = dict()
-        self.models_master = dict()
+        self.models_master_1 = dict()
+        self.models_master_2 = dict()
+        self.models_master_3 = dict()
         self.result = tuple()
 
         global model
 
         if 'compare_models' in kwargs.keys():
             models = kwargs.get('compare_models')
-            print(models)
             self.train_graph.make_subplots('Model Comparison',
                                            models={'m1': models['m1'],
                                                    'm2': models['m2'],
@@ -92,12 +93,14 @@ class Interface:
         if continue_matching:
 
             check_n_size(self._n)
-
+            idx = 1
             while self._n['y1']:
-                n = {'y1': self._n['y1'].pop(),
-                     'y2': self._n['y2'].pop(),
-                     'y4': self._n['y4'].pop()}
-                self._fit(n)
+                n = {'y1': self._n['y1'].pop(0),
+                     'y2': self._n['y2'].pop(0),
+                     'y4': self._n['y4'].pop(0)}
+                print(f'n : {n}\nidx : {idx}')
+                self._fit(n, idx)
+                idx += 1
 
             self.ideal_fn_df = pd.DataFrame(data=self.ideal_fn_dict)
             self.ideal_fn_df = self.ideal_fn_df.set_index('x')
@@ -115,7 +118,10 @@ class Interface:
             else:
                 self.result = finals
 
-    def _fit(self, n):
+    def _fit(self, n, idx):
+
+        _m = f'm{idx}'
+        new_models = dict()
 
         for i in range(1, 5):
 
@@ -131,7 +137,12 @@ class Interface:
                     i, self.ideal, 'linear',
                     print_table=self.print_table)
 
+            new_models[col] = model
             self.models[col] = model
+
+            print(f'model: {model}\nself.models: {self.models}')
+            print(f'i: {i}, order: {model.order}, col: {col}')
+
             self.ideal_fn_dict[model.ideal_col] = model.ideal_col_array
             self.train_master[_if] = model.ideal_col
             self.train_master[_max] = model.max_dev
@@ -141,9 +152,21 @@ class Interface:
                 self.train_graph.plot_model(model,
                                             plt_type=self.plt_type,
                                             with_rmse=self.with_rmse)
-        if not self.models_master.get('m1', None):
+
+        if idx == 1:
+            self.models_master_1[_m] = new_models
+        if idx == 2:
+            self.models_master_2[_m] = new_models
+        if idx == 3:
+            self.models_master_3[_m] = new_models
+
+        '''if not self.models_master.get('m1', None):
             self.models_master['m1'] = self.models
         elif not self.models_master.get('m2', None):
+            print(f'models_master: {self.models_master}')
+
             self.models_master['m2'] = self.models
         elif not self.models_master.get('m3', None):
-            self.models_master['m3'] = self.models
+            print(f'models_master: {self.models_master}')
+
+            self.models_master['m3'] = self.models'''

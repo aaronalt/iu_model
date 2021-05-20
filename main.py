@@ -21,18 +21,25 @@ def main():
 
     # should return models, train master dicts each time
     _n = {
-        'y1': [5, 21, 36],
-        'y2': [5, 22, 36],
+        'y1': [5, 10, 15],
+        'y2': [6, 11, 16],
         'y4': [3, 9, 27]
     }
 
-    run = Interface(plot=False,
-                    map_train=False,
-                    _n=_n,
-                    to_db=False,
-                    create_tables=False)
+    df = Interface(map_train=True,
+                   _n=_n,
+                   to_db=False,
+                   create_tables=False)
+    print(f'mm_1: {df.models_master_1}')
+    print(f'mm_2: {df.models_master_2}')
+    print(f'mm_3: {df.models_master_3}')
 
-    return run
+    df2 = Interface(continue_matching=False,
+                    compare_models={'m1': df.models_master_1,
+                                    'm2': df.models_master_2,
+                                    'm3': df.models_master_3})
+
+    return df2
 
     # Instantiate new Data objects
     train, ideal, test = Data("training_data", to_db=True), Data("ideal_functions", to_db=True), Data("test_data")
