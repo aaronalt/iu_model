@@ -19,25 +19,54 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 def main():
     """Main entry point of the program."""
 
-    # should return models, train master dicts each time
+    #
     _n = {
-        'y1': [5, 10, 15],
-        'y2': [6, 11, 16],
+        'y1': [5, 21, 36],
+        'y2': [5, 22, 36],
         'y4': [3, 9, 27]
     }
 
     df = Interface(map_train=True,
                    _n=_n,
                    to_db=False,
-                   create_tables=False)
+                   create_tables=False,
+                   plot_training_subplots=True)
 
     df2 = Interface(continue_matching=False,
                     compare_models={'m1': df.models_master_1,
                                     'm2': df.models_master_2,
                                     'm3': df.models_master_3})
-    return df2
 
-    # Instantiate new Data objects
+    '''
+    What did we discover from 1st iteration:
+    - fn(y1) could use a lower-order polynomial for a more general fit without overfitting
+      - test: lower order vs. 1st best fit
+    - fn(y2): same as y1
+    - fn(y3): needs linear and not polynomial function to reduce rss
+      - test: new linear function vs. current best fit
+    - fn(y4): best order is 3, but can rss be reduced? still too large 
+    '''
+
+    #
+    _n = {
+        'y1': [5, 21, 36],
+        'y2': [5, 22, 36],
+        'y4': [3, 9, 27]
+    }
+
+    df = Interface(map_train=True,
+                   _n=_n,
+                   to_db=False,
+                   create_tables=False,
+                   plot_training_subplots=True)
+
+    df2 = Interface(continue_matching=False,
+                    compare_models={'m1': df.models_master_1,
+                                    'm2': df.models_master_2,
+                                    'm3': df.models_master_3})
+
+
+    """# Instantiate new Data objects
     train, ideal, test = Data("training_data", to_db=True), Data("ideal_functions", to_db=True), Data("test_data")
 
     '''Plot training dataset as subplots'''
@@ -109,15 +138,7 @@ def main():
     test_model = Model(test_df['x'], test_df['y'], 1, df=test_df)
     test_df_1, _tm1 = test_model.match_ideal_functions(ideal_funs_df, train_master, models)
 
-    '''
-    What did we discover from 1st iteration:
-    - fn(y1) could use a lower-order polynomial for a more general fit without overfitting
-      - test: lower order vs. 1st best fit
-    - fn(y2): same as y1
-    - fn(y3): needs linear and not polynomial function to reduce rss
-      - test: new linear function vs. current best fit
-    - fn(y4): best order is 3, but can rss be reduced? still too large 
-    '''
+
 
     # 2nd iteration
     # New empty objects
@@ -218,10 +239,9 @@ def main():
 
     # Plot comparisons between polynomial orders for each training function
     train_graph.make_subplots('Model Comparison',
-                              models={'m1': models, 'm2': models_2, 'm3': models_3})
+                              models={'m1': models, 'm2': models_2, 'm3': models_3})"""
 
-    # Insert test df into database
-    # test.df_to_db(new_test_df)
+
 
 
 if __name__ == "__main__":

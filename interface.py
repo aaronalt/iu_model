@@ -98,7 +98,6 @@ class Interface:
                 n = {'y1': self._n['y1'].pop(0),
                      'y2': self._n['y2'].pop(0),
                      'y4': self._n['y4'].pop(0)}
-                print(f'n : {n}\nidx : {idx}')
                 self._fit(n, idx)
                 idx += 1
 
@@ -140,9 +139,6 @@ class Interface:
             new_models[col] = model
             self.models[col] = model
 
-            print(f'model: {model}\nself.models: {self.models}')
-            print(f'i: {i}, order: {model.order}, col: {col}')
-
             self.ideal_fn_dict[model.ideal_col] = model.ideal_col_array
             self.train_master[_if] = model.ideal_col
             self.train_master[_max] = model.max_dev
@@ -159,14 +155,3 @@ class Interface:
             self.models_master_2[_m] = new_models
         if idx == 3:
             self.models_master_3[_m] = new_models
-
-        '''if not self.models_master.get('m1', None):
-            self.models_master['m1'] = self.models
-        elif not self.models_master.get('m2', None):
-            print(f'models_master: {self.models_master}')
-
-            self.models_master['m2'] = self.models
-        elif not self.models_master.get('m3', None):
-            print(f'models_master: {self.models_master}')
-
-            self.models_master['m3'] = self.models'''

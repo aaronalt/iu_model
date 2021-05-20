@@ -64,6 +64,9 @@ class InterfaceTest(unittest.TestCase):
                                         'm2': df.models_master_2,
                                         'm3': df.models_master_3})
 
+    def test_run_complete(self):
+
+
 
 if __name__ == '__main__':
     unittest.main()
