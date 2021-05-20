@@ -44,6 +44,13 @@ class InterfaceTest(unittest.TestCase):
                            _n=n,
                            to_db=False,
                            create_tables=False)
+            print(df)
+        df = Interface(map_train=False,
+                       _n=self._n,
+                       to_db=False,
+                       create_tables=False)
+        self.assertEqual(type(df), type(df),
+                         'should return pandas df')
 
 
 if __name__ == '__main__':
