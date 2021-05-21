@@ -190,6 +190,7 @@ class Data(DBTable):
 
         col_name = f'y{col}'
         subplot_array, _n, _rss, _rmse, _max_e, _var = [], [], [], [], [], []
+        global model_df
 
         if r_type == "linear":
             x = self.df['x'].values
@@ -211,7 +212,7 @@ class Data(DBTable):
                     else:
                         out = table_name.rsplit('/', 1)
                         self.df_to_html(model_df, f'{out[1]}', output_dir=out[0])
-                return model
+                return model, model_df
             except AttributeError:
                 # raised if _ideal df is empty
                 raise Exception("ideal df empty or None")
@@ -237,17 +238,19 @@ class Data(DBTable):
                 if det[0] < rss_max:
                     subplot_array.append(model)
             if print_table:
+                print(f'_n = {_n}')
                 model_df = pd.DataFrame()
                 model_df['Order'] = _n
                 model_df['RSS'] = [i[0].round(5) for i in _rss]
                 model_df['RMSE'] = [i.round(5) for i in _rmse]
                 model_df['MRE'] = [i.round(5) for i in _max_e]
                 self.df_to_html(model_df, f'{col_name}_order-{order}')
-                return model
+                print(f'from print_table:\n{model_df}')
+                return model, model_df
             elif not subplot or len(subplot_array) <= 1:
                 return model
             else:
-                subplot_graph = Graph('Polynomial order and weighted NLR', self.df)
+                subplot_graph = Graph('Polynomial order and weighted NLR', df=self.df)
                 subplot_graph.make_subplots(subplot_array)
                 return model
         else:

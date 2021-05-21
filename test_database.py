@@ -39,7 +39,7 @@ class DatabaseTest(unittest.TestCase):
             ideal = Data('ideal', _create=False)
             ideal.csv_to_df()
             self.assertFalse(ideal.is_empty(), 'df obj should be populated')
-            model = self._data.fit_model(1, ideal, 'linear',
+            model, model_df = self._data.fit_model(1, ideal, 'linear',
                                          print_table=True, table_name='./tests/unittest')
             self.assertEqual(type(model), type(Model(self.df['x'], self.df['y1'], 1)))
             self.assertEqual(model.x[0], self.df['x'][0])

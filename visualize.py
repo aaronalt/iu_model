@@ -143,11 +143,9 @@ class Graph:
 
                     fig.subplots_adjust(wspace=0.1)
                     self.plt.savefig(f'{subdir}/{fn}_{title}.pdf', bbox_inches='tight')
-                    self.plt.show()
-
-                    '''self.plt.show(block=False)
+                    self.plt.show(block=False)
                     self.plt.pause(1)
-                    self.plt.close()'''
+                    self.plt.close()
 
             return True
 
@@ -155,7 +153,7 @@ class Graph:
         """Plot models using matplotlib"""
 
         sb.set_theme()
-        col_name = f'y{model_.col}'
+        global col_name
 
         descr_title = kwargs.get('descr_title', '')
         plt_type = kwargs.get('plt_type', None)
@@ -164,13 +162,16 @@ class Graph:
         fit_model = kwargs.get('fit_model', None)
         subdir = kwargs.get('subdir', './graphs')
 
-        if fit_model:
-            self.plt.title(f'{self.title}, {col_name} [n = {fit_model.order}]')
-        else:
-            self.plt.title(f'{self.title}, {col_name} [n = {model_.order}]')
+        try:
+            col_name = f'y{model_.col}'
+            if fit_model:
+                self.plt.title(f'{self.title}, {col_name} [n = {fit_model.order}]')
+            else:
+                self.plt.title(f'{self.title}, {col_name} [n = {model_.order}]')
+        except AttributeError:
+            pass  # if the model_ is for error plot
 
         try:
-
             if 'best fit' in plt_type:
 
                 y = self.data[col_name]
@@ -218,6 +219,24 @@ class Graph:
                 self.plt.close()
 
                 return True
+
+            if 'error' in plt_type:
+                try:
+                    if model_['Order'].size > 1:  # no need to plot order of 1
+
+                        self.plt.plot(model_['Order'], model_['RSS'], label='RSS')
+                        self.plt.plot(model_['Order'], model_['RMSE'], label='RMSE')
+                        self.plt.plot(model_['Order'], model_['MRE'], label='MRE')
+
+                        self.plt.title(f'Error Comparison, '
+                                       f'[{min(model_["Order"])} < n < {max(model_["Order"])}]')
+                        self.plt.xlabel('Order')
+                        self.plt.ylabel('Error')
+                        self.plt.legend()
+                        self.plt.show()
+
+                except KeyError:  # if plot is linear
+                    pass
 
         except TypeError:
             raise PlotTypeException("you must provide a plot type")

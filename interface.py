@@ -68,6 +68,7 @@ class Interface:
         self.with_rmse = kwargs.get('with_rmse', True)
         self.print_table = kwargs.get('print_table', True)
         self.plot = kwargs.get('plot', True)
+        self.plot_order_error = kwargs.get('plot_order_error', False)
 
         map_train = kwargs.get('map_train', True)
         continue_matching = kwargs.get('continue_matching', True)
@@ -128,11 +129,11 @@ class Interface:
             _if, _max, _bf = f'y{i}_if', f'y{i}_max_err', f'y{i}_best_fit'
 
             if i != 3:
-                model = self.train.fit_model(
+                model, error_df = self.train.fit_model(
                     i, self.ideal, 'poly.fit',
                     order=n[col], print_table=self.print_table)
             else:
-                model = self.train.fit_model(
+                model, error_df = self.train.fit_model(
                     i, self.ideal, 'linear',
                     print_table=self.print_table)
 
@@ -148,6 +149,10 @@ class Interface:
                 self.train_graph.plot_model(model,
                                             plt_type=self.plt_type,
                                             with_rmse=self.with_rmse)
+
+            if self.plot_order_error:
+                print(f'error_df: \n{error_df}')
+                self.train_graph.plot_model(error_df, plt_type='error')
 
         if idx == 1:
             self.models_master_1[_m] = new_models
