@@ -219,8 +219,8 @@ class Data(DBTable):
         if r_type == "poly.fit":
             model = Model([], [], col)
             rss_max = 1000
-            # Iterates through orders and returns fit with minimum residual error, with weight=1/y
-            # todo: experiment with different weights, programmatically (for paper, what to do next)
+            # Iterates through orders and returns fit with
+            # minimum residual error, with weight=1/y
             for i in range(1, order + 1):
                 weight = 1 / self.df[col_name]
                 fn = P.fit(self.df['x'], self.df[col_name], i, full=True, w=weight)

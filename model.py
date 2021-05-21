@@ -4,7 +4,6 @@ IU International University of Applied Sciences
 Data Science, M.Sc.
 """
 
-
 from itertools import starmap
 from sklearn.metrics import mean_squared_error, max_error
 import pandas as pd
