@@ -161,6 +161,7 @@ class Graph:
         with_rmse = kwargs.get('with_rmse', False)
         fit_model = kwargs.get('fit_model', None)
         subdir = kwargs.get('subdir', './graphs')
+        _col = kwargs.get('_col')
 
         try:
             col_name = f'y{model_.col}'
@@ -191,7 +192,7 @@ class Graph:
                 self.plt.xlabel('x')
                 self.plt.ylabel('y')
                 self.plt.legend()
-                self.plt.savefig(f'{subdir}/{col_name}_order-{model_.order}_bestfit.pdf',
+                self.plt.savefig(f'{subdir}/{col_name}_n-{model_.order}_bestfit.pdf',
                                  bbox_inches='tight')
                 self.plt.show(block=False)
                 self.plt.pause(1)
@@ -212,7 +213,7 @@ class Graph:
                 self.plt.xlabel('x')
                 self.plt.ylabel('y')
                 self.plt.legend()
-                self.plt.savefig(f'{subdir}/y{fit_model.col}_order-{fit_model.order}_test-vs-ideal.pdf',
+                self.plt.savefig(f'{subdir}/y{fit_model.col}_n-{fit_model.order}_test-vs-ideal.pdf',
                                  bbox_inches='tight')
                 self.plt.show(block=False)
                 self.plt.pause(1)
@@ -228,11 +229,12 @@ class Graph:
                         self.plt.plot(model_['Order'], model_['RMSE'], label='RMSE')
                         self.plt.plot(model_['Order'], model_['MRE'], label='MRE')
 
-                        self.plt.title(f'Error Comparison, '
+                        self.plt.title(f'Error Comparison, {_col} '
                                        f'[{min(model_["Order"])} < n < {max(model_["Order"])}]')
                         self.plt.xlabel('Order')
                         self.plt.ylabel('Error')
                         self.plt.legend()
+                        self.plt.savefig(f'{subdir}/{_col}_n-{max(model_["Order"])}_errorplot.pdf')
                         self.plt.show()
 
                 except KeyError:  # if plot is linear

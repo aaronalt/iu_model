@@ -151,8 +151,7 @@ class Interface:
                                             with_rmse=self.with_rmse)
 
             if self.plot_order_error:
-                print(f'error_df: \n{error_df}')
-                self.train_graph.plot_model(error_df, plt_type='error')
+                self.train_graph.plot_model(error_df, plt_type='error', _col=col)
 
         if idx == 1:
             self.models_master_1[_m] = new_models

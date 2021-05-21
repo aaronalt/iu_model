@@ -238,14 +238,12 @@ class Data(DBTable):
                 if det[0] < rss_max:
                     subplot_array.append(model)
             if print_table:
-                print(f'_n = {_n}')
                 model_df = pd.DataFrame()
                 model_df['Order'] = _n
                 model_df['RSS'] = [i[0].round(5) for i in _rss]
                 model_df['RMSE'] = [i.round(5) for i in _rmse]
                 model_df['MRE'] = [i.round(5) for i in _max_e]
-                self.df_to_html(model_df, f'{col_name}_order-{order}')
-                print(f'from print_table:\n{model_df}')
+                self.df_to_html(model_df, f'{col_name}_n-{order}')
                 return model, model_df
             elif not subplot or len(subplot_array) <= 1:
                 return model
