@@ -15,7 +15,9 @@ class PlotTypeException(Exception):
 
 
 class Graph:
-    """Graph object to plot models and data"""
+    """
+    Graph object to plot models and data
+    """
 
     def __init__(self, title, **kwargs):
         self.title = title
@@ -24,14 +26,21 @@ class Graph:
         self.x = self.data['x']
 
     def make_subplots(self, title, **kwargs):
-        """Plot multiple subplots at once"""
+        """
+        Plot multiple subplots at once
 
-        sb.set_theme()
+        :param title: Name of graph
+        :keyword subdir: Str(), path to subdirectory
+        :keyword models: Dict(), fitted models
+        """
+
+        sb.set_theme()  # use seaborn default layout
         idx = 0
 
         subdir = kwargs.get('subdir', './graphs')
 
         if 'train' in title.lower():
+            # Plot training data
             fig, axs = self.plt.subplots(4, 1, sharex=True)
             for i in self.data.keys():
                 if i != "x":
@@ -57,10 +66,11 @@ class Graph:
             self.plt.show(block=False)
             self.plt.pause(1)
             self.plt.close()
+
             return True
 
         if 'model' in title.lower():
-
+            # Plot model comparisons
             global model_1, model_2, model_3, factor, _m2, _m3, stats, \
                 _m_rmse, _m_rss, _m_max, \
                 _m2_rmse, _m2_rss, _m2_max, \
@@ -75,6 +85,7 @@ class Graph:
             for fn, _m in model_1.items():
 
                 box = {'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'black'}
+
                 fig, axs = self.plt.subplots(1, 3, sharey=True, figsize=(15, 5))
 
                 try:
@@ -142,7 +153,7 @@ class Graph:
                     axs[2].annotate(stats_3, xy=(2, 2), xycoords='axes points', bbox=box, fontsize=10)
 
                     fig.subplots_adjust(wspace=0.1)
-                    self.plt.savefig(f'{subdir}/{fn}_{title}.pdf', bbox_inches='tight')
+                    self.plt.savefig(f'{subdir}/{fn}_{title}_{_m.order}{_m2.order}{_m3.order}.pdf', bbox_inches='tight')
                     self.plt.show(block=False)
                     self.plt.pause(1)
                     self.plt.close()
@@ -150,14 +161,23 @@ class Graph:
             return True
 
     def plot_model(self, model_, **kwargs):
-        """Plot models using matplotlib"""
+        """
 
-        sb.set_theme()
+        Plot models and save matplotlib figures
+
+        :param model_: Model(), model to be plotted
+        :keyword plt_type: Str(), type of plot to make
+        ['best fit', 'test vs ideal', 'error']
+        :keyword with_rmse: Bool() = False
+        :keyword fit_model: Model(), used to compare with test data
+        :keyword subdir: Str(), path to subdirectory
+        :keyword _col: Str(), col name
+        """
+
+        sb.set_theme()  # use seaborn default theme
         global col_name
 
-        descr_title = kwargs.get('descr_title', '')
         plt_type = kwargs.get('plt_type', None)
-        error = kwargs.get('error', False)
         with_rmse = kwargs.get('with_rmse', False)
         fit_model = kwargs.get('fit_model', None)
         subdir = kwargs.get('subdir', './graphs')
@@ -180,9 +200,6 @@ class Graph:
                 self.plt.scatter(self.x, y,
                                  label="data", alpha=0.4, color='green')
 
-                if error:
-                    self.plt.fill_between(self.x, model_.y - model_.rmse, model_.y + model_.rmse,
-                                          label='+/- RMSE', alpha=0.2)
                 if with_rmse:
                     self.plt.plot(self.x, model_.ideal_col_array, "o",
                                   linewidth=0, label="ideal", color='blue')
@@ -235,7 +252,9 @@ class Graph:
                         self.plt.ylabel('Error')
                         self.plt.legend()
                         self.plt.savefig(f'{subdir}/{_col}_n-{max(model_["Order"])}_errorplot.pdf')
-                        self.plt.show()
+                        self.plt.show(block=False)
+                        self.plt.pause(1)
+                        self.plt.close()
 
                 except KeyError:  # if plot is linear
                     pass

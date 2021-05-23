@@ -12,7 +12,9 @@ import numpy as np
 
 
 class Model:
-    """Fit model to training data and match with an ideal function"""
+    """
+    Fit model to training data and match with an ideal function
+    """
 
     def __init__(self, x, y, col, df=pd.DataFrame(), rss=0, order=1):
         self.x = x

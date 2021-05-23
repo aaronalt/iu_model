@@ -5,11 +5,9 @@ Data Science, M.Sc.
 """
 
 from sqlalchemy import create_engine, MetaData
-from database import Data
 from interface import Interface
-from model import Model
-from visualize import Graph
 import pandas as pd
+
 
 engine = create_engine("sqlite:///python_models.db", echo=True)
 meta = MetaData()
@@ -17,25 +15,35 @@ pd.set_option('display.float_format', lambda x: '%.5f' % x)
 
 
 def main():
-    """Main entry point of the program."""
+    """
 
-    # Set polynomial order for
+    Main entry point of the program.
+
+    Uses keyword args passed to Interface() object to run
+    program with specific options.
+
+    """
+
+    # Set polynomial order of the fit function
+    # Last number in the list is the chosen model
     _n = {
-        'y1': [1, 20, 36],
-        'y2': [1, 20, 36],
-        'y4': [3, 9, 27]
+        'y1': [1, 19, 17],
+        'y2': [1, 20, 18],
+        'y4': [9, 27, 3]
     }
 
     df = Interface(_n=_n,
-                   to_db=True,  # set to 'False' for future iterations
                    create_tables=False,
                    plot_training_subplots=True,
                    plot_order_error=True)
 
     df2 = Interface(continue_matching=False,
+                    run_complete=True,
                     compare_models={'m1': df.models_master_1,
                                     'm2': df.models_master_2,
                                     'm3': df.models_master_3})
+
+    return df2
 
     '''
     What did we discover from 1st iteration:

@@ -27,27 +27,19 @@ def check_n_size(n):
 
 class Interface:
     """
-
-
+    Program runner from main.py module
     """
 
     def __init__(self, **kwargs):
         """
         :keyword map_train: run Model functions entirely and
         plot matched ideal vs test data
-
         :keyword to_db: create SQLite db table for created Data obj
-
         :keyword plt_type: which type of fit algorithm to run, 'linear' or 'best fit'
-
         :keyword with_rmse: include rmse values in graph
-
         :keyword print_table: save stats from model comparisons as a .pdf table
-
         :keyword plot: plot data and save
-
         :keyword plot_training_subplots: display and save training data as subplots
-
         :keyword compare_models: shortcut to just plot comparison of fitted models,
         values is dict of fitted model dicts
         """
