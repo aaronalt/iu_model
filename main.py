@@ -8,7 +8,6 @@ from sqlalchemy import create_engine, MetaData
 from interface import Interface
 import pandas as pd
 
-
 engine = create_engine("sqlite:///python_models.db", echo=True)
 meta = MetaData()
 pd.set_option('display.float_format', lambda x: '%.5f' % x)
@@ -26,53 +25,57 @@ def main():
 
     # Set polynomial order of the fit function
     # Last number in the list is the chosen model
+    n = {
+        'y1': [[5, 15, 36], [20, 18, 17], [19, 21, 23]],
+        'y2': [[5, 15, 36], [18, 19, 20], [22, 23, 24]],
+        'y4': [[1, 2, 3], [3, 9, 27], [7, 8, 9]]
+    }
+
+    while len(n['y1']) > 1:
+
+        print(f'len(n) should be > 1: {len(n["y1"])}')
+
+        _n = dict(y1=n['y1'].pop(0),
+                  y2=n['y2'].pop(0),
+                  y4=n['y4'].pop(0))
+        print(f'_n: {_n}')
+        df = Interface(_n=_n,
+                       print_table=True,
+                       plot_order_error=True)
+        print(_n)
+        df2 = Interface(_n=_n,
+                        to_db=False,
+                        run_complete=True,
+                        compare_models={'m1': df.models_master_1,
+                                        'm2': df.models_master_2,
+                                        'm3': df.models_master_3})
+
+        print(df2)
+
+    """
+    Final iteration
+    """
+
     _n = {
-        'y1': [1, 19, 17],
-        'y2': [1, 20, 18],
-        'y4': [9, 27, 3]
+        'y1': n['y1'][0],
+        'y2': n['y2'][0],
+        'y4': n['y4'][0]
     }
 
     df = Interface(_n=_n,
                    create_tables=False,
+                   print_table=True,
                    plot_training_subplots=True,
                    plot_order_error=True)
 
-    df2 = Interface(continue_matching=False,
+    df2 = Interface(_n=_n,
+                    to_db=False,
                     run_complete=True,
                     compare_models={'m1': df.models_master_1,
                                     'm2': df.models_master_2,
                                     'm3': df.models_master_3})
 
-    return df2
-
-    '''
-    What did we discover from 1st iteration:
-    
-    method:
-    - y1: set lowest, middle, and highest polynomial to check on the graph
-    - y2: same
-    - y3: no n order
-    - y4: from looking at the graph we know its a cubic function, so an n order of 3 will
-    more than likely be the best fit. However, we dont know if there will be a higher chance
-    of minimizing least-squares by changing certain parameters and hyperparameters
-    
-    observations:
-    - fn(y1) could use a lower-order polynomial for a more general fit without overfitting
-      - test: lower order vs. 1st best fit
-      - n-17: rss cuts in half, rmse reduces a lot
-      - n-19: rss halfs again, rmse reduces, AND MRE more than halfs
-    - fn(y2): 
-      - n-18: rss halfs, rmse halfs, mre cuts little
-      - n-20: rss halfs, rmse halfs, mre cuts
-      - n-20 - n-32: no drastic changes in rss, rmse climbs, mre stable
-    - fn(y3): needs linear and not polynomial function to reduce rss
-    - fn(y4): best order is 3, but can rss be reduced? still too large 
-      - n-3: rss obliterates, but rmse jumps to 102.41, mre jumps to 289
-      - n-9: rss down a litte, rmse down more, mre at highest
-    '''
-
-
-# todo: experiment with different weights, programmatically (for paper, what to do next)
+    print(df2)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,7 @@ class NSizeError(Exception):
 
 
 def check_n_size(n):
+    """Helper function to ensure _n is correct size"""
     size = [len(i) for i in n.values()]
     if len(n) == 3 \
             and len(n) == size[0] \
@@ -22,7 +23,8 @@ def check_n_size(n):
             and len(n) == size[2]:
         return True
     else:
-        raise NSizeError('_n size does not match')
+        print(f'_n size ({size}) does not match')
+        return False
 
 
 class Interface:
@@ -49,7 +51,7 @@ class Interface:
 
         self.train = Data('training_data', to_db=to_db)
         self.ideal = Data('ideal_functions', to_db=to_db)
-        self.test = Data('test_data')
+        self.test = Data('test_data', _create=_create)
 
         self.train_master = self.train.csv_to_df()
         self.train_graph = Graph("Training Data", df=self.train.csv_to_df())
@@ -84,13 +86,12 @@ class Interface:
             self.train_graph.make_subplots(self.train_graph.title)
 
         if continue_matching:
-
             check_n_size(self._n)
             idx = 1
             while self._n['y1']:
-                n = {'y1': self._n['y1'].pop(0),
-                     'y2': self._n['y2'].pop(0),
-                     'y4': self._n['y4'].pop(0)}
+                n = dict(y1=self._n['y1'].pop(0),
+                         y2=self._n['y2'].pop(0),
+                         y4=self._n['y4'].pop(0))
                 self._fit(n, idx)
                 idx += 1
 
@@ -114,7 +115,6 @@ class Interface:
 
         _m = f'm{idx}'
         new_models = dict()
-
         for i in range(1, 5):
 
             col = f'y{i}'

@@ -29,7 +29,7 @@ class Model:
         self.__bf = ""
         self.ideal_col = ""
         self.ideal_col_array = []
-        if not df.__sizeof__() == 0:
+        if not df.size == 0:
             self.df = df
 
     def get_max_dev(self):
@@ -121,23 +121,26 @@ class Model:
         for row in test_copy.itertuples():
             # check training data to see which fun the ideal fun belongs to
             train_row = train_df[train_df['x'] == row.x]
-            for i in range(1, 5):
-                t = train_row[train_row[f'y{i}_if'].isin([row.ideal_fun])]
-                y_col = f'y{i}'
-                if not len(t.index) == 0:
-                    nt = train_df
-                    nt_ = nt[['x', y_col]]
-                    new_train = nt_.set_index('x')
-                    # match test(x, y) values with train(x, y) values
-                    # to be plotted and tested
-                    n = test_copy.loc[test_copy['ideal_fun'] == row.ideal_fun]
-                    for r in n.itertuples():
-                        ideal, train = row.ideal_fun, y_col
-                        if train not in test_map.keys():
-                            test_map[train] = {'ideal_fun': ideal, train: [], ideal: []}
-                        else:
-                            test_map[train][train].append((r.x, new_train.at[r.x, y_col]))
-                            test_map[train][ideal].append((r.x, r.y))
+            try:
+                for i in range(1, 5):
+                    t = train_row[train_row[f'y{i}_if'].isin([row.ideal_fun])]
+                    y_col = f'y{i}'
+                    if not len(t.index) == 0:
+                        nt = train_df
+                        nt_ = nt[['x', y_col]]
+                        new_train = nt_.set_index('x')
+                        # match test(x, y) values with train(x, y) values
+                        # to be plotted and tested
+                        n = test_copy.loc[test_copy['ideal_fun'] == row.ideal_fun]
+                        for r in n.itertuples():
+                            ideal, train = row.ideal_fun, y_col
+                            if train not in test_map.keys():
+                                test_map[train] = {'ideal_fun': ideal, train: [], ideal: []}
+                            else:
+                                test_map[train][train].append((r.x, new_train.at[r.x, y_col]))
+                                test_map[train][ideal].append((r.x, r.y))
+            except KeyError:
+                break
 
         return self.compare_errors(test_map, train_df)
 

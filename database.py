@@ -61,7 +61,7 @@ class DBTable:
                         Column("x", Float, primary_key=True),
                         Column("y", Float),
                         Column("delta y", Float),
-                        Column("ideal function", Float))
+                        Column("ideal_function", Float))
                 if 'ideal' in self.name:
                     self.table = Table(
                         "ideal_functions", meta,
@@ -80,7 +80,7 @@ class DBTable:
                         Column("y45", Float), Column("y46", Float), Column("y47", Float), Column("y48", Float),
                         Column("y49", Float), Column("y50", Float))
             except InvalidRequestError:
-                print('table already created')
+                print(f'({self.name}) table already created')
                 pass
 
             if to_db:
@@ -129,7 +129,8 @@ class DBTable:
 
     def df_to_db(self, df):
         """Inserts Dataframe object into the database"""
-        if df.__sizeof__() == 0:
+        if df.size == 0:
+            print(f'******* size of df is ({df.size})')
             self.df.to_sql(self.name, con=engine, if_exists='replace')
             meta.create_all(engine)
         else:
